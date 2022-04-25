@@ -1,0 +1,7 @@
+---
+- name: Include task to install kubernetes packages
+  include: install_kubernetes.yml
+
+- name: Install kubernetes python package
+  pip:
+    name: kubernetes

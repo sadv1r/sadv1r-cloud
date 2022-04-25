@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.sadv1r.cloud'
+version '1.0.0-SNAPSHOT'
+
+allprojects {
+    group 'ru.sadv1r.cloud'
+    sourceCompatibility = '17'
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations.all {
+        test {
+            useJUnitPlatform()
+        }
+
+        resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+    }
+}

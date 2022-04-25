@@ -1,0 +1,22 @@
+---
+- name: Create kube user account
+  user:
+    state: present
+    name: kube
+#    groups: kube
+    append: yes
+    create_home: yes
+    shell: /bin/bash
+
+- name: Allow kube to use sudo without password
+  lineinfile:
+    dest: /etc/sudoers
+    line: 'kube ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
+- name: Set up authorized keys for the kube user
+  authorized_key:
+    user: kube
+    key: "{{item}}"
+  with_file:
+    - ~/.ssh/id_ed25519.pub

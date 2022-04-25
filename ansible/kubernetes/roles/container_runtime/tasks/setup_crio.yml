@@ -1,0 +1,29 @@
+---
+- name: Configure Cri-o YUM repository
+  template:
+    src: crio.repo.j2
+    dest: /etc/yum.repos.d/crio.repo
+
+- name: Setup required sysctl params
+  ansible.posix.sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items:
+    - {key: net.bridge.bridge-nf-call-ip6tables, value: 1}
+    - {key: net.bridge.bridge-nf-call-iptables,  value: 1}
+    - {key: net.ipv4.ip_forward,  value: 1}
+
+- name: Install cri-o
+  yum:
+    name: cri-o
+    state: latest
+    update_cache: yes
+
+- name: Start and enable crio service
+  service:
+    name: crio
+    state: restarted
+    enabled: yes

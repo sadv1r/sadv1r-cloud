@@ -1,0 +1,9 @@
+---
+- name: Install Kubegres
+  gather_facts: no
+  hosts:
+    - masters
+  roles:
+    - install-kubegres
+  vars:
+    kubegres_version: v1.12 # Release from https://github.com/reactive-tech/kubegres/releases or branch name

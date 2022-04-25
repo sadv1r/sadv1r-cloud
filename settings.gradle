@@ -1,0 +1,6 @@
+rootProject.name = 'cloud'
+include 'correlation-id-spring-boot-starter'
+include 'cloud-web-starter'
+include 'link-shortener'
+include 'link-shortener-reactive'
+

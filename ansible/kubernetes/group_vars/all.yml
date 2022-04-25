@@ -1,0 +1,15 @@
+timezone: "Europe/Moscow"
+
+# Versions
+kubernetes_version: "1.22"
+
+# Container Runtime: docker, containerd, cri-o
+container_runtime: docker
+
+# Container Network Interface: flannel, calico
+cni: flannel
+
+# Docker specific configuration
+docker_setup_proxy: false
+docker_proxy_server: "proxy.example.com:8080"
+docker_proxy_exclude: "localhost,127.0.0.1"
