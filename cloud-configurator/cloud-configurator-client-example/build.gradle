@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'com.google.cloud.tools.jib' version '3.2.0'
+    id 'org.siouan.frontend-jdk11' version '6.0.0'
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation project(':cloud-configurator:cloud-configurator-client-starter')
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+frontend {
+    nodeDistributionProvided = true
+
+    assembleScript = 'run build'
+
+    packageJsonDirectory = new File('./frontend')
+}
+
+task copyFrontend(type: Copy) {
+    dependsOn 'assembleFrontend'
+
+    from './frontend/target/dist/'
+    into "$buildDir/resources/main/static"
+}
+
+test {
+    useJUnitPlatform()
+}

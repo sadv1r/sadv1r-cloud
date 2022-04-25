@@ -1,0 +1,42 @@
+---
+#- name: Run
+#  get_url:
+#    url: https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+#    dest: ~/kubernetes-dashboard.yaml
+#    mode: '0664'
+
+#- name: Apply kubernetes dashboard manifest to the cluster.
+#  kubernetes.core.k8s:
+#    state: present
+#    src: ~/kubernetes-dashboard.yaml
+
+- name: Deploy kubernetes dashboard into cluster
+  command: |
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf \
+        apply -f https://raw.githubusercontent.com/kubernetes/dashboard/{{ version }}/aio/deploy/recommended.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 2
+  delay: 2
+  ignore_errors: true
+
+#- name: Apply kubernetes dashboard manifest to the cluster. # TODO No module named 'kubernetes'. Replace with command kubectl
+#  kubernetes.core.k8s:
+#    state: present
+#    template: kubernetes-dashboard-service.j2
+
+- name: Template a file to ~/kubernetes-dashboard-service.yaml
+  ansible.builtin.template:
+    src: kubernetes-dashboard-service.j2
+    dest: ~/kubernetes-dashboard-service.yaml
+    mode: '0644'
+
+- name: Deploy kubernetes dashboard into cluster
+  command: |
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf \
+        apply -f ~/kubernetes-dashboard-service.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 2
+  delay: 2
+  ignore_errors: true

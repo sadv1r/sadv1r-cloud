@@ -1,0 +1,71 @@
+---
+- name: Reset Kubernetes component
+  shell: "kubeadm reset --force"
+  register: reset_cluster
+
+- name: Initialize the cluster
+  when: reset_cluster is succeeded
+  shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+  args:
+    chdir: $HOME
+    creates: cluster_initialized.txt
+
+- name: Create .kube directory
+  become: yes
+  become_user: kube
+  file:
+    path: $HOME/.kube
+    state: directory
+    mode: 0755
+
+- name: Copy admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/kube/.kube/config
+    remote_src: yes
+    owner: kube
+
+- name: 'Install Pod network: flannel'
+  become: yes
+  become_user: kube
+  shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  args:
+    chdir: $HOME
+  when: cni == "flannel"
+
+- name: 'Install Pod network: calico'
+  become: yes
+  become_user: kube
+  shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  args:
+    chdir: $HOME
+  when: cni == "calico"
+
+- name: Get the token for joining the worker nodes
+  become: yes
+  become_user: kube
+  shell: kubeadm token create --print-join-command
+  register: kubernetes_join_command
+
+- debug:
+    msg: "{{ kubernetes_join_command.stdout }}"
+
+- name: Copy join command to local file
+  local_action: copy content="{{ kubernetes_join_command.stdout_lines[0] }}" dest="/tmp/kubernetes_join_command" mode=0777
+
+- name: "Copy config file"
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ lookup('env', 'HOME') }}/admin.conf"
+    flat: yes
+  run_once: yes
+  ignore_errors: yes
+
+#- name: Create local connection
+#  delegate_to: localhost
+#  command: "{{ item }}"
+#  with_items:
+#    - kubectl config set-credentials admin/master-k8s.shared --username=admin --password=admin
+#    - kubectl config set-cluster master-k8s.shared --insecure-skip-tls-verify=true --server=https://master-k8s.shared
+#    - kubectl config set-context default/master-k8s.shared/admin --user=admin/master1-k8s.shared --namespace=default --cluster=master-k8s.shared
+#    - kubectl config use-context default/master-k8s.shared/admin

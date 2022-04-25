@@ -1,0 +1,78 @@
+---
+- name: Install kubernetes python package
+  pip:
+    name: kubernetes
+
+# https://kubernetes.io/docs/concepts/storage/storage-classes/
+- name: Create Storage Class
+  become: yes
+  become_user: kube
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: local-storage
+      provisioner: kubernetes.io/no-provisioner
+      volumeBindingMode: WaitForFirstConsumer
+
+# Download and apply manifest
+- name: Download kubegres manifest to the cluster
+  become: yes
+  become_user: kube
+  get_url:
+    url: https://raw.githubusercontent.com/reactive-tech/kubegres/{{ kubegres_version }}/kubegres.yaml
+    dest: ~/kubegres.yaml
+    mode: '0664'
+
+- name: Apply kubegres manifest to the cluster
+  become: yes
+  become_user: kube
+  kubernetes.core.k8s:
+    state: present
+    src: ~/kubegres.yaml
+
+- name: Create Postgres Secret
+  become: yes
+  become_user: kube
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: mypostgres-secret
+        namespace: default
+      type: Opaque
+      stringData:
+        superUserPassword: postgresSuperUserPsw
+        replicationUserPassword: postgresReplicaPsw
+
+- name: Create Postgres
+  become: yes
+  become_user: kube
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: kubegres.reactive-tech.io/v1
+      kind: Kubegres
+      metadata:
+        name: mypostgres
+        namespace: default
+      spec:
+        replicas: 3
+        image: postgres:13.2
+        database:
+          size: 200Mi
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mypostgres-secret
+                key: superUserPassword
+          - name: POSTGRES_REPLICATION_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mypostgres-secret
+                key: replicationUserPassword

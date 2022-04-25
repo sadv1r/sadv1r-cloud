@@ -1,0 +1,30 @@
+---
+- name: Prepare Server
+  hosts:
+    - masters
+    - workers
+  roles:
+    - configure_server
+    - container_runtime
+    - kubernetes
+
+- name: Configure master
+  hosts:
+    - masters
+  roles:
+    - master
+
+- name: Configure node
+  hosts:
+    - workers
+  roles:
+    - node
+
+# https://master-k8s.shared:30002
+- name: Deploy kubernetes dashboard
+  hosts:
+    - masters
+  roles:
+    - role: dashboard
+  vars:
+    version: master # Release from https://github.com/kubernetes/dashboard/releases or branch name

@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+logging:
+  pattern:
+    console: ${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %X{requestId} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'dev'
+  datasource:
+#    url: r2dbc:h2:mem:///~/db/testdb
+    url: r2dbc:h2:mem:testdb
+    username: sa
+    password: ''
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: validate
+  flyway:
+#    url: jdbc:h2:mem:~/db/testdb;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=CREATE DOMAIN IF NOT EXISTS TIMESTAMPTZ AS TIMESTAMP
+    url: jdbc:h2:mem:testdb;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=CREATE DOMAIN IF NOT EXISTS TIMESTAMPTZ AS TIMESTAMP
+    enabled: true
+    user: sa
+    password: ''
+    locations: classpath:db/migration
+
+server:
+  error:
+    include-stacktrace: always
+
+logging:
+  level:
+    ru:
+      sadv1r:
+        cloud: trace
+ru:
+  sadv1r:
+    cloud:
+      link-shortener:
+        base-url: http://localhost:8080
