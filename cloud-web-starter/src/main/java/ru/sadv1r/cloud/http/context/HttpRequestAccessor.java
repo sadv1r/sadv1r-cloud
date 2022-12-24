@@ -1,12 +1,11 @@
 package ru.sadv1r.cloud.http.context;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ServerWebExchange;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class HttpRequestAccessor {
 

@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  ru.sadv1r.cloud.http.context.configuration.CloudWebStarterAutoConfiguration

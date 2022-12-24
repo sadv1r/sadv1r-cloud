@@ -1,5 +1,7 @@
 package ru.sadv1r.cloud.correlation.filter;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -12,9 +14,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.sadv1r.cloud.correlation.configuration.CorrelationIdProperties;
 import ru.sadv1r.cloud.correlation.generator.RequestIdGenerator;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 @Slf4j
 @RequiredArgsConstructor
