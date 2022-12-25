@@ -1,14 +1,13 @@
 package ru.sadv1r.cloud.http.context;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.core.Ordered;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 public class ReactorExchangeFilter implements WebFilter, Ordered {
 

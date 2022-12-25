@@ -13,7 +13,7 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:h2:mem:testdb;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=CREATE DOMAIN IF NOT EXISTS TIMESTAMPTZ AS TIMESTAMP
+    url: jdbc:hsqldb:mem:testdb;sql.syntax_pgs=true
     username: sa
     password: ''
   jpa:

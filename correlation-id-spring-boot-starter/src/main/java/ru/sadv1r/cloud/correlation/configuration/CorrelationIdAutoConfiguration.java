@@ -1,5 +1,6 @@
 package ru.sadv1r.cloud.correlation.configuration;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
@@ -15,7 +16,7 @@ import ru.sadv1r.cloud.correlation.generator.RequestIdGenerator;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.REACTIVE;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.SERVLET;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(CorrelationIdProperties.class)
 public class CorrelationIdAutoConfiguration {
 
